@@ -10,7 +10,6 @@ int main()
 
 	Calculator c;
 	c.SupportOperation('^', new Pow);
-	//c.SupportOperation('%', ModDiv);
 	c.IsSupported('^');
 	std::string question;
 	std::cin >> question;

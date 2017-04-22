@@ -47,16 +47,16 @@ void Calculator::DoCalculation(std::stack<double>& operands, std::stack<char>& o
 
 Calculator::Calculator()
 {
-	SupportedOperations_.insert(std::make_pair('+', new Summ));
-	SupportedOperations_['-'] = new Sub;
-	SupportedOperations_.emplace('*', new Mult);
-	SupportedOperations_.insert(std::pair<char, BinOperator*>('/', new Div));
+	SupportedOperations_.insert(std::make_pair('+', std::make_shared<Summ>()));
+	SupportedOperations_['-'] = std::make_shared<Sub>();
+	SupportedOperations_.emplace('*', std::make_shared<Mult>());
+	SupportedOperations_.insert(std::pair<char, std::shared_ptr<BinOperator>>('+', std::make_shared<Div>()));
 }
-Calculator::~Calculator()
-{
-	for (std::map <char, BinOperator*>::iterator /* auto */ it = SupportedOperations_.begin(); it!= SupportedOperations_.end(); it++)
-		delete it->second;
-}
+//Calculator::~Calculator()
+//{
+//	for (auto it = SupportedOperations_.begin(); it!= SupportedOperations_.end(); it++)
+//		delete it->second;
+//}
 void Calculator::HandleDigit(char c, std::stack<double>& operands, std::stack<char>& operations)
 {
 	operands.push(c-'0');
