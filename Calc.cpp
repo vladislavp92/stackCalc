@@ -52,7 +52,11 @@ Calculator::Calculator()
 	SupportedOperations_.emplace('*', new Mult);
 	SupportedOperations_.insert(std::pair<char, BinOperator*>('/', new Div));
 }
-
+Calculator::~Calculator()
+{
+	for (std::map <char, BinOperator*>::iterator /* auto */ it = SupportedOperations_.begin(); it!= SupportedOperations_.end(); it++)
+		delete it->second;
+}
 void Calculator::HandleDigit(char c, std::stack<double>& operands, std::stack<char>& operations)
 {
 	operands.push(c-'0');

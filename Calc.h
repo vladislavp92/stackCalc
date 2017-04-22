@@ -8,6 +8,7 @@ class Calculator
 {
 public:
 	Calculator();
+	~Calculator();
 	double Calculate(std::string expression);
 	void SupportOperation(char, BinOperator*);
 	void UnsupportOperation(char);
