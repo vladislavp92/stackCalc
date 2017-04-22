@@ -2,29 +2,17 @@
 #include <iostream>
 #include <stack>
 #include <string>
+#include "BinOperator.h"
+#include "Div.h"
+#include "Mult.h"
+#include "Sub.h"
+#include "Summ.h"
 
-enum class CharGroup { digit, operation, bracket };
-enum class Priority { min, low, high, max };
-
-Priority FindOutOperationPriority(char c)
+Priority Calculator::FindOutOperationPriority(char c)
 {
-	switch (c)
-	{
-	case '+':
-		return Priority::low;
-		break;
-	case '-':
-		return Priority::low;
-		break;
-	case '*':
-		return Priority::high;
-		break;
-	case '/':
-		return Priority::high;
-		break;
-	}
+	return SupportedOperations_[c]->GetPriority();
 }
-CharGroup FindOutCharGroup(char c)
+CharGroup Calculator::FindOutCharGroup(char c)
 {
 	CharGroup group;
 	if (c <= '9' && c >= '0')
@@ -42,7 +30,8 @@ CharGroup FindOutCharGroup(char c)
 
 	return group;
 }
-void DoCalculation(std::stack<double>& operands, std::stack<char>& operations)
+
+void Calculator::DoCalculation(std::stack<double>& operands, std::stack<char>& operations)
 {
 	double RightOperand = operands.top();
 	operands.pop();
@@ -52,28 +41,23 @@ void DoCalculation(std::stack<double>& operands, std::stack<char>& operations)
 	operands.pop();
 	double Result;
 
-	switch (Operation)
-	{
-	case '+':
-		Result = LeftOperand + RightOperand;
-		break;
-	case '-':
-		Result = LeftOperand - RightOperand;
-		break;
-	case '*':
-		Result = LeftOperand * RightOperand;
-		break;
-	case '/':
-		Result = LeftOperand / RightOperand;
-		break;
-	}
+	Result = SupportedOperations_[Operation]->Execute(LeftOperand, RightOperand);
 	operands.push(Result);
 }
-void HandleDigit(char c, std::stack<double>& operands, std::stack<char>& operations)
+
+Calculator::Calculator()
+{
+	SupportedOperations_.insert(std::make_pair('+', new Summ));
+	SupportedOperations_['-'] = new Sub;
+	SupportedOperations_.emplace('*', new Mult);
+	SupportedOperations_.insert(std::pair<char, BinOperator*>('/', new Div));
+}
+
+void Calculator::HandleDigit(char c, std::stack<double>& operands, std::stack<char>& operations)
 {
 	operands.push(c-'0');
 }
-void HandleOperation(char c, std::stack<double>& operands, std::stack<char>& operations)
+void Calculator::HandleOperation(char c, std::stack<double>& operands, std::stack<char>& operations)
 {
 	if (operations.empty())
 	{
@@ -99,7 +83,8 @@ void HandleOperation(char c, std::stack<double>& operands, std::stack<char>& ope
 			}
 		}
 }
-void HandleBracket(char c, std::stack<double>& operands, std::stack<char>& operations)
+
+void Calculator::HandleBracket(char c, std::stack<double>& operands, std::stack<char>& operations)
 {
 	if (c == '(')
 	{
@@ -135,13 +120,26 @@ double Calculator::Calculate(std::string expression)
 			HandleOperation(expression[i], operands, operations);
 			break;
 		}
- 		//std::cout << expression[i] << " " << group << /n;
-	}
+ }
 
 	while (!operations.empty())
 	{
 		DoCalculation(operands, operations);
 	}
-
 	return operands.top();
+}
+void Calculator::SupportOperation(char c, BinOperator* op)
+{
+	SupportedOperations_.emplace(c, op);
+}
+void Calculator::UnsupportOperation(char c)
+{
+	SupportedOperations_.erase(c);
+}
+bool Calculator::IsSupported(char c)
+{
+	if (SupportedOperations_.find(c) == SupportedOperations_.end())
+	{
+		return 1;
+	}
 }
