@@ -5,7 +5,6 @@
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-	std::cout << "¬ведите выражение:" << std::endl;
 	std::string question;
 	std::cin >> question;
 	Calculator c;
